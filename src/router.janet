@@ -56,13 +56,9 @@
   matched)
 
 (defn router
-  "Creates a router from routes"
+  "Creates a simple router from routes"
   [routes]
   (def compiled-routes (compile-routes routes))
-  (fn [path]
-    (let [[action params] (lookup compiled-routes path)]
-      (if action 
-        action 
-        (routes :not-found))))) # @todo document
+  (fn [path] (lookup compiled-routes path)))
 
 
