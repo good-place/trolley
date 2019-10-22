@@ -1,42 +1,42 @@
 (import tester :prefix "")
-(import ../src/trolley :as trolley)
+(import ../trolley :as trolley)
 
+(def config "Routes' config for all tests"
+  {"/" :root "/home/:id" :home "/real-thing.json" :real-thing})
 
 (deftest "Compile routes"
-  (def compiled-routes 
-    (trolley/compile-routes {"/" :root "/home/:id" :home}))
-
-  (test "are compiled" compiled-routes)
-
-  (def actions (values compiled-routes))
-  (test "has root action" 
-        (some |(= :root $) actions))
-  (test "has home action" 
-        (some |(= :home $) actions))
-
-  (def first-route (first (keys compiled-routes)))
-  (test "route is peg"
-        (= :core/peg (type first-route))))
+  (let [compiled-routes (trolley/compile-routes config)
+        actions (values compiled-routes) 
+        routes (keys compiled-routes)]
+    (test "are compiled" compiled-routes)
+    (test "has root action" 
+          (some |(= $ :root) actions))
+    (test "has home action" 
+          (some |(= $ :home) actions))
+    (test "routes are all PEGs"
+          (all |(= (type $) :core/peg) routes))))
 
 (deftest "Lookup uri"
-  (def compiled-routes 
-    (trolley/compile-routes {"/" :root "/home/:id" :home}))
-
-  (test "lookup"
-        (deep= (trolley/lookup compiled-routes "/home/3") 
-               [:home @{:id "3"}]))
-  (test "lookup root"
-        (deep= (trolley/lookup compiled-routes "/") 
-               [:root @{}]))
-  (test "lookup rooty"
-        (empty? (trolley/lookup compiled-routes "/home/"))))
+  (let [compiled-routes (trolley/compile-routes config)]
+    (test "lookup"
+         (deep= (trolley/lookup compiled-routes "/home/3") 
+                [:home @{:id "3"}]))
+   (test "lookup root"
+         (deep= (trolley/lookup compiled-routes "/") 
+                [:root @{}]))
+   (test "lookup real thing"
+         (deep= (trolley/lookup compiled-routes "/real-thing.json") 
+                [:real-thing @{}]) )
+   (test "lookup rooty"
+         (empty? (trolley/lookup compiled-routes "/home/")))))
 
 (deftest "Router"
-  (def router (trolley/router {"/" :root 
-                              "/home/:id" :home}))
-  (test "root"
-        (deep= (router "/") [:root @{}]))
-  (test "home"
-        (deep= (router "/home/3") [:home @{:id "3"}]))
-  (test "not found"
-        (empty? (router "home"))))
+  (let [router (trolley/router config)]
+    (test "root"
+          (deep= (router "/") [:root @{}]))
+    (test "home"
+          (deep= (router "/home/3") [:home @{:id "3"}]))
+    (test "real thing json"
+          (deep= (router "/real-thing.json") [:real-thing @{}]))
+    (test "not found"
+          (empty? (router "home")))))

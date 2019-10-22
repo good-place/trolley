@@ -1,7 +1,7 @@
 # @todo: make this dyn
 (def content 
-  "Characters we consider part of the route"
-  '(+ (range "AZ") (range "az") (range "09") (set "-_")))
+  "Characters considered part of the route"
+  '(+ (range "AZ") (range "az") (range "09") (set "-_.")))
 
 (def sep "Separator character" "/")
 

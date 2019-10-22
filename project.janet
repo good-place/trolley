@@ -8,4 +8,4 @@
   :dependencies ["https://github.com/joy-framework/tester"])
 
 (declare-source
-  :source @["src/trolley.janet"])
+  :source @["trolley.janet"])
