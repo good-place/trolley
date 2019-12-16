@@ -1,7 +1,7 @@
 # @todo: make this dyn
 (def content 
   "Characters considered part of the route"
-  '(+ (range "AZ") (range "az") (range "09") (set "-_.")))
+  '(+ :w (set "-_.")))
 
 (def sep "Separator character" "/")
 
@@ -24,9 +24,9 @@
            (case pt
              :root (tuple '* sep p)
              :path (tuple '* sep p) 
-             :param (tuple '* sep 
-                           ~(group (* (constant ,(keyword p))
-                                      (<- (some ,content)))))))
+             :param (tuple '* sep  
+                      ~(group (* (constant ,(keyword p))
+                         (<- (some ,content)))))))
       (array/insert 0 '*)
       (array/push -1)
       splice
