@@ -61,4 +61,14 @@
   (def compiled-routes (compile-routes routes))
   (fn [path] (lookup compiled-routes path)))
 
+(defn resolver 
+  "Creates a simple route compiler from routes"
+  [routes]
+  (def inverted-routes (invert routes))
+  (fn [action &opt params] 
+    (def template (get inverted-routes action))
+    (if params 
+      (let [params-grammar (seq [[k v] :pairs params] ~(/ (<- (* ":" ,(string k))) ,(string v)))]
+        (first (peg/match ~(% (any (+ ,;params-grammar (<- 1)))) template)))
+      template)))
 
