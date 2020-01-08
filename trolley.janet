@@ -15,7 +15,7 @@
      :main '(some (* :sep 
                      (+ (if :param (group (* (constant :param) :pref :capture-path)))
                         (if :path (group (* (constant :path) :capture-path)))
-                        (if -1 (group (* (constant :root) (constant -1))) ))))}))
+                        (if -1 (group (* (constant :root) (constant -1)))))))}))
 
 (defn- compile-route
   "Compiles custom grammar for one route"
@@ -25,8 +25,8 @@
              :root (tuple '* sep p)
              :path (tuple '* sep p) 
              :param (tuple '* sep  
-                      ~(group (* (constant ,(keyword p))
-                         (<- (some ,content)))))))
+                      ~(group (* (constant ,(keyword p)) 
+                                 (<- (some ,content)))))))
       (array/insert 0 '*)
       (array/push -1)
       splice
