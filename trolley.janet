@@ -15,7 +15,7 @@
      :main '(some (* :sep 
                      (+ (if :param (group (* (constant :param) :pref :capture-path)))
                         (if :path (group (* (constant :path) :capture-path)))
-                        (if -1 (group (* (constant :root) (constant -1))) ))))}))
+                        (if -1 (group (* (constant :root) (constant -1)))))))}))
 
 (defn- compile-route
   "Compiles custom grammar for one route"
@@ -25,8 +25,8 @@
              :root (tuple '* sep p)
              :path (tuple '* sep p) 
              :param (tuple '* sep  
-                      ~(group (* (constant ,(keyword p))
-                         (<- (some ,content)))))))
+                      ~(group (* (constant ,(keyword p)) 
+                                 (<- (some ,content)))))))
       (array/insert 0 '*)
       (array/push -1)
       splice
@@ -61,4 +61,14 @@
   (def compiled-routes (compile-routes routes))
   (fn [path] (lookup compiled-routes path)))
 
+(defn resolver 
+  "Creates a simple route compiler from routes"
+  [routes]
+  (def inverted-routes (invert routes))
+  (fn [action &opt params] 
+    (def template (get inverted-routes action))
+    (if params 
+      (let [params-grammar (seq [[k v] :pairs params] ~(/ (<- (* ":" ,(string k))) ,(string v)))]
+        (first (peg/match ~(% (any (+ ,;params-grammar (<- 1)))) template)))
+      template)))
 

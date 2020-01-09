@@ -5,8 +5,9 @@ action to which it resolves with params as defined in routes.
 
 ## Routes
 
-We define routes as a struct with keys which contain path and params definition and
-values which contain actions to which the path resolves.
+We define routes as a struct with keys which contain path with optional  params
+definition and values which contain actions to which the path resolves.
+
 Example: 
 
 ```
@@ -36,17 +37,30 @@ Id of `core/peg` differs on your machine.
 
 ## Router
 
-This function creates routing function from routes definition, which then can be
+This function returns routing function from routes definition, which then can be
 used to match the path and returns action and table with parameters.
 
 Example:
 
 ```
 (import trolley)
-(def router 
+(def match 
   (trolley/router {"/" root "/home" home "/people/:id" people})) 
-(router "/people/3")
+(match "/people/3")
 => (people @{:id "3"})
 ```
 
-Creation of the `router` function is the main usage pattern for this library.
+## Resolver 
+
+This function returns resolving function from routes definition, which then can
+be used to resolve url path for the action and parameters.
+
+Example:
+
+```
+(import trolley)
+(def path-for 
+  (trolley/resolver {"/" root "/home" home "/people/:id" people})) 
+(path-for people @{:id "3"})
+=> "/people/3"
+```
