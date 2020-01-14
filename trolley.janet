@@ -1,5 +1,5 @@
 # @todo: make this dyn
-(def content 
+(def chars 
   "Characters considered part of the route"
   '(+ :w (set "-_.")))
 
@@ -7,15 +7,20 @@
 
 (def pref "Param prefix character" ":")
 
+(defn named-capture [name & capture]
+  ~(group (* (constant ,(keyword name)) ,;capture)))
+
+(def <-: named-capture)
+
 (def grammar 
   "PEG grammar to match routes with"
   (peg/compile
-    {:sep sep :pref pref :path ~(some ,content) 
+    {:sep sep :pref pref :path ~(some ,chars) 
      :param '(* :pref :path) :capture-path '(<- :path)
-     :main '(some (* :sep 
-                     (+ (if :param (group (* (constant :param) :pref :capture-path)))
-                        (if :path (group (* (constant :path) :capture-path)))
-                        (if -1 (group (* (constant :root) (constant -1)))))))}))
+     :main ~(some (* :sep 
+                     (+ (if :param ,(<-: :param :pref :capture-path))
+                        (if :path ,(<-: :path :capture-path))
+                        (if -1 ,(<-: :root '(constant -1))))))}))
 
 (defn- compile-route
   "Compiles custom grammar for one route"
@@ -25,8 +30,7 @@
              :root (tuple '* sep p)
              :path (tuple '* sep p) 
              :param (tuple '* sep  
-                      ~(group (* (constant ,(keyword p)) 
-                                 (<- (some ,content)))))))
+                           ~,(<-: p ~(<- (some ,chars))))))
       (array/insert 0 '*)
       (array/push -1)
       splice
