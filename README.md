@@ -26,7 +26,7 @@ Example:
 
 ```
 (import trolley)
-(troley/compile-routes 
+(trolley/compile-routes 
   {"/" root
    "/home" home
    "/people/:id" people})
@@ -59,7 +59,7 @@ Example:
 
 ```
 (import trolley)
-(def path-for 
+(def path-for
   (trolley/resolver {"/" root "/home" home "/people/:id" people})) 
 (path-for people @{:id "3"})
 => "/people/3"
