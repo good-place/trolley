@@ -1,4 +1,3 @@
 #!/bin/sh
 
-echo "Watching tests"
-fswatch --event Updated -o trolley.janet  test/trolley.janet | xargs -n1 -I{} jpm test
+fd janet | entr -s "jpm test"
