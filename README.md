@@ -1,3 +1,7 @@
+# This repository is deprecated
+
+Please use latest version from [SourceHut](https://git.sr.ht/~pepe/trolley)
+
 # Trolley 
 
 General router for Janet programming language. The main idea is the path and
